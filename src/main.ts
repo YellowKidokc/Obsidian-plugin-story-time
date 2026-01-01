@@ -7,26 +7,36 @@ import {
 	Editor,
 	MarkdownView
 } from 'obsidian';
-import { StoryTimeSettings, DEFAULT_SETTINGS } from './types';
+import { StoryTimeSettings, DEFAULT_SETTINGS, DEFAULT_BACKUP_SETTINGS } from './types';
 import { StoryTimeSettingTab } from './settings';
 import { StoryGenerator } from './story-generator';
 import { AIRefiner } from './ai-refiner';
+import { AccessTracker } from './access-tracker';
+import { BackupService } from './backup-service';
+import { BackupScheduler } from './backup-scheduler';
 import {
 	ConceptInputModal,
 	FolderSelectModal,
-	StoryPreviewModal
+	StoryPreviewModal,
+	BackupFolderSelectModal
 } from './modals';
 
 export default class StoryTimePlugin extends Plugin {
 	settings: StoryTimeSettings;
 	generator: StoryGenerator;
 	refiner: AIRefiner;
+	accessTracker: AccessTracker;
+	backupService: BackupService;
+	backupScheduler: BackupScheduler;
 
 	async onload() {
 		await this.loadSettings();
 
 		this.generator = new StoryGenerator(this.app, this.settings);
 		this.refiner = new AIRefiner(this.settings);
+
+		// Initialize backup system
+		await this.initializeBackupSystem();
 
 		// Add settings tab
 		this.addSettingTab(new StoryTimeSettingTab(this.app, this));
@@ -83,17 +93,111 @@ export default class StoryTimePlugin extends Plugin {
 	}
 
 	onunload() {
+		// Clean up backup system
+		this.backupScheduler?.stop();
+		this.accessTracker?.destroy();
 		console.log('Story Time plugin unloaded');
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const loadedData = await this.loadData();
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
+
+		// Ensure backup settings exist (for upgrades from older versions)
+		if (!this.settings.backup) {
+			this.settings.backup = { ...DEFAULT_BACKUP_SETTINGS };
+		}
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
 		this.generator?.updateSettings(this.settings);
 		this.refiner?.updateSettings(this.settings);
+		this.backupScheduler?.updateSettings(this.settings.backup);
+	}
+
+	/**
+	 * Initialize the adaptive backup system
+	 */
+	private async initializeBackupSystem(): Promise<void> {
+		// Create access tracker
+		this.accessTracker = new AccessTracker(this.app);
+		await this.accessTracker.initialize();
+
+		// Create backup service
+		this.backupService = new BackupService(this.app, this.settings.backup);
+
+		// Create backup scheduler
+		this.backupScheduler = new BackupScheduler(
+			this.app,
+			this.accessTracker,
+			this.backupService,
+			this.settings.backup
+		);
+
+		// Start scheduler if enabled
+		if (this.settings.backup.enabled) {
+			this.backupScheduler.start();
+		}
+
+		// Add command for manual backup
+		this.addCommand({
+			id: 'backup-folder',
+			name: 'Backup Folder Now',
+			callback: () => this.showBackupFolderDialog()
+		});
+
+		// Add command to show backup status
+		this.addCommand({
+			id: 'backup-status',
+			name: 'Show Backup Status',
+			callback: () => this.showBackupStatus()
+		});
+
+		console.log('Story Time: Backup system initialized');
+	}
+
+	/**
+	 * Show dialog to select folder for manual backup
+	 */
+	private showBackupFolderDialog(): void {
+		if (!this.settings.backup.outputPath) {
+			new Notice('Please configure a backup output location in settings first.');
+			return;
+		}
+
+		new BackupFolderSelectModal(
+			this.app,
+			async (selectedFolders) => {
+				for (const folder of selectedFolders) {
+					await this.backupScheduler.manualBackup(folder);
+				}
+			}
+		).open();
+	}
+
+	/**
+	 * Show backup status for all monitored folders
+	 */
+	private showBackupStatus(): void {
+		const status = this.backupScheduler.getBackupStatus();
+
+		if (status.length === 0) {
+			new Notice('No folders are being monitored for backup.');
+			return;
+		}
+
+		let message = 'Backup Status:\n\n';
+		for (const folder of status) {
+			const lastBackup = folder.lastBackup
+				? new Date(folder.lastBackup).toLocaleString()
+				: 'Never';
+			message += `${folder.folderPath || '(Root)'}: ${folder.accessCount} accesses (24h)\n`;
+			message += `  Tier: ${folder.tier}\n`;
+			message += `  Last backup: ${lastBackup}\n\n`;
+		}
+
+		new Notice(message, 10000);
 	}
 
 	/**
