@@ -1,0 +1,10 @@
+{
+	"id": "story-time",
+	"name": "Story Time",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Create narrative journeys by tracking concepts across your papers and stories. Aggregate mentions into cohesive story pages with optional AI refinement.",
+	"author": "Story Time",
+	"authorUrl": "https://github.com/YellowKidokc/Obsidian-plugin-story-time",
+	"isDesktopOnly": false
+}
