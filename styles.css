@@ -1,0 +1,172 @@
+/* Story Time Plugin Styles */
+
+.story-time-modal {
+	min-width: 500px;
+}
+
+.story-time-preview-modal {
+	min-width: 700px;
+	max-width: 900px;
+}
+
+.story-time-description {
+	color: var(--text-muted);
+	font-size: 0.9em;
+	margin-bottom: 1em;
+}
+
+.story-time-stats {
+	color: var(--text-accent);
+	font-weight: 500;
+	margin-bottom: 1em;
+}
+
+.story-time-hint {
+	color: var(--text-muted);
+	font-size: 0.85em;
+	font-style: italic;
+}
+
+/* Folder list styling */
+.story-time-folder-list,
+.story-time-folder-select {
+	max-height: 300px;
+	overflow-y: auto;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 8px;
+	margin-bottom: 1em;
+}
+
+.story-time-folder-list .setting-item,
+.story-time-folder-select .setting-item {
+	border-bottom: none;
+	padding: 4px 0;
+}
+
+/* Order section */
+.story-time-order-section {
+	margin-top: 1em;
+	padding-top: 1em;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.story-time-order-section h3 {
+	margin-top: 0;
+}
+
+.story-time-folder-order .setting-item {
+	border-bottom: none;
+	padding: 4px 0;
+}
+
+/* Slider styling */
+.story-time-sliders {
+	background: var(--background-secondary);
+	border-radius: 8px;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.story-time-sliders h3 {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+
+.story-time-sliders .setting-item {
+	border-bottom: none;
+}
+
+.story-time-sliders input[type="range"] {
+	width: 200px;
+}
+
+/* Preview section */
+.story-time-preview {
+	max-height: 400px;
+	overflow-y: auto;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	padding: 1em;
+	margin-bottom: 1em;
+	background: var(--background-primary);
+}
+
+.story-time-preview h3 {
+	margin-top: 0;
+	position: sticky;
+	top: 0;
+	background: var(--background-primary);
+	padding-bottom: 0.5em;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.story-time-preview-content {
+	padding-top: 0.5em;
+}
+
+.story-time-chapter-preview {
+	margin-bottom: 1em;
+	padding-bottom: 1em;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.story-time-chapter-preview:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.story-time-chapter-preview h4 {
+	margin: 0 0 0.25em 0;
+	color: var(--text-accent);
+	display: inline;
+}
+
+.story-time-mention-count {
+	color: var(--text-muted);
+	font-size: 0.85em;
+}
+
+.story-time-chapter-preview blockquote {
+	margin: 0.5em 0 0 0;
+	padding: 0.5em 1em;
+	border-left: 3px solid var(--text-accent);
+	background: var(--background-secondary);
+	border-radius: 0 4px 4px 0;
+	font-size: 0.9em;
+	color: var(--text-normal);
+}
+
+/* Action buttons */
+.story-time-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+.story-time-actions .setting-item {
+	border-bottom: none;
+	padding: 0;
+}
+
+/* Settings page specific */
+.story-time-folder-order {
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+	.story-time-modal {
+		min-width: 90vw;
+	}
+
+	.story-time-preview-modal {
+		min-width: 95vw;
+	}
+
+	.story-time-sliders input[type="range"] {
+		width: 150px;
+	}
+}
