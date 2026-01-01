@@ -399,6 +399,88 @@ export class StoryPreviewModal extends Modal {
 }
 
 /**
+ * Simple folder selection modal for backup
+ */
+export class BackupFolderSelectModal extends Modal {
+	private selectedFolders: string[] = [];
+	private onSubmit: (folders: string[]) => void;
+
+	constructor(app: App, onSubmit: (folders: string[]) => void) {
+		super(app);
+		this.onSubmit = onSubmit;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
+		contentEl.addClass('story-time-modal');
+
+		contentEl.createEl('h2', { text: 'Select Folders to Backup' });
+		contentEl.createEl('p', {
+			text: 'Choose which folders to back up now.',
+			cls: 'story-time-description'
+		});
+
+		const folders = this.getAllFolders();
+		const folderContainer = contentEl.createDiv({ cls: 'story-time-folder-select' });
+
+		folders.forEach(folder => {
+			new Setting(folderContainer)
+				.setName(folder || '(Root)')
+				.addToggle(toggle => toggle
+					.setValue(false)
+					.onChange(value => {
+						if (value) {
+							if (!this.selectedFolders.includes(folder)) {
+								this.selectedFolders.push(folder);
+							}
+						} else {
+							this.selectedFolders = this.selectedFolders.filter(f => f !== folder);
+						}
+					}));
+		});
+
+		new Setting(contentEl)
+			.addButton(btn => btn
+				.setButtonText('Backup Selected')
+				.setCta()
+				.onClick(() => {
+					if (this.selectedFolders.length > 0) {
+						this.close();
+						this.onSubmit(this.selectedFolders);
+					} else {
+						new Notice('Please select at least one folder');
+					}
+				}))
+			.addButton(btn => btn
+				.setButtonText('Cancel')
+				.onClick(() => this.close()));
+	}
+
+	private getAllFolders(): string[] {
+		const folders: string[] = [];
+		const rootFolder = this.app.vault.getRoot();
+
+		const traverse = (folder: TFolder, path: string) => {
+			if (path) folders.push(path);
+			for (const child of folder.children) {
+				if (child instanceof TFolder) {
+					traverse(child, child.path);
+				}
+			}
+		};
+
+		traverse(rootFolder, '');
+		return folders.sort();
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}
+
+/**
  * Confirmation modal for AI refinement
  */
 export class AIRefineConfirmModal extends Modal {

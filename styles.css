@@ -156,6 +156,69 @@
 	overflow-y: auto;
 }
 
+/* Backup Settings Styles */
+.story-time-backup-folder-list {
+	max-height: 200px;
+	overflow-y: auto;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 8px;
+	margin-bottom: 1em;
+}
+
+.story-time-backup-folder-list .setting-item {
+	border-bottom: none;
+	padding: 4px 0;
+}
+
+.story-time-backup-tiers {
+	background: var(--background-secondary);
+	border-radius: 8px;
+	padding: 1em;
+	margin-bottom: 1em;
+}
+
+.story-time-backup-tiers .setting-item {
+	border-bottom: 1px solid var(--background-modifier-border);
+	padding: 8px 0;
+}
+
+.story-time-backup-tiers .setting-item:last-child {
+	border-bottom: none;
+}
+
+.story-time-backup-status {
+	margin-top: 1em;
+}
+
+.story-time-status-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9em;
+}
+
+.story-time-status-table th,
+.story-time-status-table td {
+	padding: 8px 12px;
+	text-align: left;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.story-time-status-table th {
+	background: var(--background-secondary);
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.story-time-status-table tr:hover {
+	background: var(--background-secondary-alt);
+}
+
+.story-time-status-table button {
+	padding: 4px 8px;
+	font-size: 0.85em;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
 	.story-time-modal {
@@ -168,5 +231,14 @@
 
 	.story-time-sliders input[type="range"] {
 		width: 150px;
+	}
+
+	.story-time-status-table {
+		font-size: 0.8em;
+	}
+
+	.story-time-status-table th,
+	.story-time-status-table td {
+		padding: 6px 8px;
 	}
 }
